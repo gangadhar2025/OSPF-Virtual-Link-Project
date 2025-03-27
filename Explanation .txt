@@ -1,0 +1,105 @@
+
+Ospf Virtual Link
+
+An OSPF Virtual Link is a logical connection used to extend the OSPF Backbone (Area 0) over a non-backbone area when direct connectivity is unavailable. It enables communication between an isolated area and Area 0, ensuring proper OSPF operation and route propagation.
+
+Objective:
+
+Implement OSPF on all routers.
+
+Ensure that Area 2 is connected to the Backbone (Area 0).
+
+Achieve full end-to-end network reachability.
+
+
+
+Network Design Overview
+
+
+Router1 (R1) & Router2 (R2) are ABR Routers
+
+These routers connect Area 0 and Area 1.
+
+They advertise inter-area prefixes using LSA Type 3.
+
+Router3 (R3) is an Internal Router in Area 1
+
+Learns R1 & R2 prefixes via LSA Type 3.
+
+Advertises these LSA Type 3 prefixes to Router4 (R4).
+
+Router4 (R4) is a Regular Router, NOT an ABR
+
+It has one interface in Area 1 and one in Area 2.
+
+Does NOT connect to Area 0, so it cannot advertise inter-area prefixes.
+
+Router5 (R5) will not learn any prefixes from Area 0 or Area 1.
+
+Router5 (R5) is an Internal Router in Area 2
+
+It advertises its own prefixes as LSA Type 1 to Router4.
+
+Router4 does not forward R5's prefixes to R3 because it is not an ABR.
+
+
+
+Problem Statement:
+
+
+
+Router5 cannot learn prefixes from Area 0 or Area 1.
+
+Router1, Router2, and Router3 cannot learn prefixes from Router5.
+
+Router4 cannot forward inter-area LSAs because it is not an ABR.
+
+
+Solution: Create an OSPF Virtual Link
+
+
+Establish a Virtual Link between R1 (ABR) and R4 (Non-ABR) via Area 1.
+
+This logically extends Area 0 over Area 1, making Router4 act as an ABR.
+
+Now, Router5 will receive inter-area routes, and full connectivity will be established.
+
+Since Router4 is NOT an ABR, it cannot forward inter-area prefixes. We will create a Virtual Link between Router1 and Router4 over Area 1.
+
+Final Outcome
+
+ Router5 learns prefixes from Area 0 & Area 1.
+ Router1, Router2, and Router3 learn prefixes from Router5.
+ Full end-to-end connectivity is established.
+
+Conclusion
+
+
+An OSPF Virtual Link acts as a logical extension of Area 0.
+
+It is required when an area is isolated from Area 0.
+
+Virtual Links should be created between two ABRs over a transit area (non-stub/non-NSSA).
+
+After configuring the Virtual Link, Router4 acts as an ABR, resolving the reachability issue.
+
+This setup ensures that all routers, including R5, can communicate with Area 0, achieving full network reachability
+
+use and trubleshoot commands 
+
+show ip int br | ex Una
+show ip protocols 
+show ip ospf int br
+show ip ospf ne 
+show ip ospf int f0/0 | in network 
+show ip ospf border-routers
+show ip protocols | in area bo
+show ip ospf virtula-links
+
+
+
+
+
+
+
+
